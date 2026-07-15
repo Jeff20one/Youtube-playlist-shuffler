@@ -92,13 +92,13 @@ input:focus { outline: none; }
     overflow-y: auto;
 }
 
-#List-item {
+#List > li {
     padding-left: 2px;
 
     span { pointer-events: none; }
 }
 
-#List-item.active {
+#List > li.active {
     padding-left: 2px;
     background: #cecece;
 
