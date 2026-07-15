@@ -96,7 +96,7 @@ function setShuffleButtonLoading(isLoading)
     shuffleButton.disabled = isLoading;
 
     shuffleButton.querySelector("span").textContent =
-        isLoading ? "Loading..." : "Shuffle";
+        isLoading ? "Loading" : "Shuffle";
 }
 
 
@@ -334,8 +334,10 @@ function renderPlaylist()
 
         listItem.className = (index === currentIndex) ? "active" : "";
 
+        const number = String(index + 1).padStart(4, "0");
+
         const span = document.createElement("span");
-        span.textContent = video.title;
+        span.textContent = number + " ~~ " + video.title;
 
         listItem.appendChild(span);
 
