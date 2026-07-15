@@ -74,8 +74,30 @@ shuffleButton.addEventListener("click", async () =>
         return;
     }
 
-    await loadAndShufflePlaylist(playlistId);
+    setShuffleButtonLoading(true);
+
+    try
+    {
+        await loadAndShufflePlaylist(playlistId);
+    }
+    finally
+    {
+        setShuffleButtonLoading(false);
+    }
 });
+
+
+//
+// Toggle shuffle button's disabled/loading state
+//
+
+function setShuffleButtonLoading(isLoading)
+{
+    shuffleButton.disabled = isLoading;
+
+    shuffleButton.querySelector("span").textContent =
+        isLoading ? "Loading..." : "Shuffle";
+}
 
 
 //
