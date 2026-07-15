@@ -1,57 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Playlist Shuffler Prototype</title>
+    <title>Playlist Shuffler</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <h1>Playlist Loader</h1>
+    <div id="Video-container"></div>
 
-    <input 
-        id="playlistIdInput"
-        type="text"
-        placeholder="Enter playlist ID"
-        size="50"
-    >
+    <div id="Right-UI">
 
-    <button id="loadButton">
-        Load Playlist
-    </button>
+        <div id="Above"> 
 
-    <button id="resumeButton">
-        Resume Last Session
-    </button>
+	    <button id="Prev-button">
+		<span> Prev </span>
+            </button>
 
+	    <button id="Next-button">
+		<span> Next </span>
+            </button>
 
-    <h2>
-        Items loaded:
-        <span id="videoCount">0</span>
-    </h2>
+	    <button id="Resume-button">
+		<span> Resume last session </span>
+            </button>
 
+            <div id="Playlist-input-UI">
+                <span> Playlist ID </span>
 
-    <div id="player"></div>
+	        <input id="Playlist-input" type="text" placeholder="Enter playlist ID"></input>
 
+		<button id="Shuffle-button">
+		    <span> Shuffle </span>
+            	</button>
+            </div>
+	    
+	    <div id="Details">
+	        <span id="Playlist-name-text"> Playlist Name </span>
+	        <span id="Video-counter-text"> 0 / 100 </span>
+	    </div>
 
-    <button id="previousButton">
-        Previous
-    </button>
+        </div>
 
-    <button id="nextButton">
-        Next
-    </button>
+	<input id="Search-input" type="text" placeholder="Search video title"></input>
+        <div id="Playlist">
+            <ul id="List">
 
+                <li id="List-item" class="active">
+                    <span> Video name </span>
+                </li>
 
-    <ul id="videoList"></ul>
+                <li id="List-item" class="">
+                    <span> Video name </span>
+                </li>
 
+                <li id="List-item" class="">
+                    <span> Video name </span>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
 
     <script src="config.js"></script>
-
     <script src="https://www.youtube.com/iframe_api"></script>
-
     <script src="script.js"></script>
-
-</body>
+</body
 </html>
