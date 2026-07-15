@@ -95,7 +95,10 @@ input:focus { outline: none; }
 #List > li {
     padding-left: 2px;
 
-    span { pointer-events: none; }
+    span { 
+        pointer-events: none; 
+        text-wrap-mode: nowrap;
+    }
 }
 
 #List > li.active {
