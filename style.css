@@ -1,0 +1,114 @@
+/* Defaults */
+body {
+    background: #222;
+    margin: 0px;
+    overflow: hidden;
+    color: #fff;
+}
+
+html { 
+    scrollbar-color: #222 #000;
+}
+
+span, input {
+    color: #fff;
+}
+
+/* Video player */
+#Video-container {
+    height:100vh;
+    width: calc(100vw - 500px);
+    background: #000;
+}
+
+/* UI container */
+#Right-UI {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 100vh;
+    width: 500px;
+
+    background: #000;
+}
+
+/* Controls */
+#Above {
+    padding: 15px;
+    padding-bottom: 0px;
+}
+
+button, input {
+    background: #22222a;
+        
+    border: solid;
+    border-style: solid;
+    border-width: 4px;
+    border-color: #22222a;
+}
+
+input:focus { outline: none; }
+
+#Resume-button {
+    position: absolute;
+ 
+    right: 20px;
+}
+
+#Playlist-input-UI {
+   padding-top: 10px;
+   padding-bottom: 10px;
+}
+
+#Playlist-input {
+    width: 315px;
+}
+
+#Search-input {
+    width: 100%
+}
+
+/* Playlist */
+#Playlist {
+    transition: top 0.3s ease, height 0.3s ease;
+
+    position: absolute;
+    top: 129px;
+    right: 0px;
+    width: 500px !important;
+    height: calc(100vh - 129px);
+
+    background: #22222a;
+}
+
+#List {
+    height: 100%;
+
+    list-style-type: none;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-inline-start: 0;
+
+    overflow-y: auto;
+}
+
+#List-item {
+    padding-left: 2px;
+
+    span { pointer-events: none; }
+}
+
+#List-item.active {
+    padding-left: 2px;
+    background: #cecece;
+
+    span { color: #000; }
+}
+
+/* Playlist animation */
+#Right-UI:not(:hover) > #Playlist {
+    transition: top 0.3s ease, height 0.3s ease;
+
+    top: 0px;
+    height: 100vh;
+}
