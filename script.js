@@ -53,8 +53,17 @@ function onYouTubeIframeAPIReady()
                 onReady: () =>
                 {
                     playerReady = true;
+                },
+
+                onStateChange: (event) =>
+                {
+                    if (event.data === YT.PlayerState.ENDED)
+                    {
+                        playNextVideo();
+                    }
                 }
             }
+            
         }
     );
 }
@@ -406,4 +415,16 @@ function playVideo(index)
     }
 
     youtubePlayer.loadVideoById(sitePlaylist[index].id);
+}
+
+//
+// Auto-advance to next video when current one ends
+//
+
+function playNextVideo()
+{
+    if (currentIndex < sitePlaylist.length - 1)
+    {
+        playVideo(currentIndex + 1);
+    }
 }
