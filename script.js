@@ -1,21 +1,32 @@
-const loadButton = document.getElementById("loadButton");
-const resumeButton = document.getElementById("resumeButton");
+//
+// Element references
+//
 
-const previousButton = document.getElementById("previousButton");
-const nextButton = document.getElementById("nextButton");
+const prevButton     = document.getElementById("Prev-button");
+const nextButton      = document.getElementById("Next-button");
+const resumeButton    = document.getElementById("Resume-button");
 
-const playlistInput = document.getElementById("playlistIdInput");
+const playlistInput   = document.getElementById("Playlist-input");
+const shuffleButton   = document.getElementById("Shuffle-button");
 
-const videoList = document.getElementById("videoList");
-const videoCount = document.getElementById("videoCount");
+const searchInput     = document.getElementById("Search-input");
+
+const listElement     = document.getElementById("List");
+
+const playlistNameText  = document.getElementById("Playlist-name-text");
+const videoCounterText  = document.getElementById("Video-counter-text");
 
 
-let loadedVideos = [];
+//
+// State
+//
 
-let currentVideoIndex = 0;
+let sitePlaylist   = [];   // array of { id, title }
+let currentIndex   = 0;
+let playlistName   = "";
 
 let youtubePlayer;
-
+let playerReady = false;
 
 
 //
@@ -25,7 +36,7 @@ let youtubePlayer;
 function onYouTubeIframeAPIReady()
 {
     youtubePlayer = new YT.Player(
-        "player",
+        "Video-container",
         {
             height: "360",
             width: "640",
@@ -35,21 +46,27 @@ function onYouTubeIframeAPIReady()
             playerVars:
             {
                 autoplay: 0
+            },
+
+            events:
+            {
+                onReady: () =>
+                {
+                    playerReady = true;
+                }
             }
         }
     );
 }
 
 
-
 //
-// Load playlist button
+// Shuffle button
 //
 
-loadButton.addEventListener("click", async () =>
+shuffleButton.addEventListener("click", async () =>
 {
     const playlistId = playlistInput.value.trim();
-
 
     if (!playlistId)
     {
@@ -57,77 +74,168 @@ loadButton.addEventListener("click", async () =>
         return;
     }
 
-
-    localStorage.setItem(
-        "lastPlaylistId",
-        playlistId
-    );
-
-
-    await loadPlaylistVideos(playlistId);
-
-
-    currentVideoIndex = 0;
-
-
-    displayVideos();
-
-
-    if (loadedVideos.length > 0)
-    {
-        playVideo(0);
-    }
+    await loadAndShufflePlaylist(playlistId);
 });
 
 
-
 //
-// Resume previous playlist
+// Resume last session
 //
 
-resumeButton.addEventListener("click", async () =>
+resumeButton.addEventListener("click", () =>
 {
-    const lastPlaylistId =
-        localStorage.getItem("lastPlaylistId");
+    const savedPlaylist = localStorage.getItem("sitePlaylist");
+    const savedIndex    = localStorage.getItem("currentIndex");
+    const savedName     = localStorage.getItem("playlistName");
+    const savedId        = localStorage.getItem("lastPlaylistId");
 
-
-    if (!lastPlaylistId)
+    if (!savedPlaylist)
     {
         alert("No previous session found");
         return;
     }
 
+    sitePlaylist  = JSON.parse(savedPlaylist);
+    currentIndex  = savedIndex ? parseInt(savedIndex, 10) : 0;
+    playlistName  = savedName || "";
 
-    playlistInput.value = lastPlaylistId;
-
-
-    await loadPlaylistVideos(lastPlaylistId);
-
-
-    currentVideoIndex = 0;
-
-
-    displayVideos();
-
-
-    if (loadedVideos.length > 0)
+    if (savedId)
     {
-        playVideo(0);
+        playlistInput.value = savedId;
+    }
+
+    renderPlaylist();
+    updateDetails();
+    playVideo(currentIndex);
+});
+
+
+//
+// Previous / Next buttons
+//
+
+prevButton.addEventListener("click", () =>
+{
+    if (currentIndex > 0)
+    {
+        playVideo(currentIndex - 1);
+    }
+});
+
+nextButton.addEventListener("click", () =>
+{
+    if (currentIndex < sitePlaylist.length - 1)
+    {
+        playVideo(currentIndex + 1);
     }
 });
 
 
-
 //
-// Load all playlist videos
+// Search filter
 //
 
-async function loadPlaylistVideos(playlistId)
+searchInput.addEventListener("input", () =>
 {
-    loadedVideos = [];
+    const query = searchInput.value.trim().toLowerCase();
 
+    const items = listElement.querySelectorAll("li");
+
+    items.forEach((item) =>
+    {
+        if (!query)
+        {
+            item.style.display = "";
+            return;
+        }
+
+        const title = item.textContent.toLowerCase();
+
+        item.style.display = title.includes(query) ? "" : "none";
+    });
+});
+
+
+//
+// Fetch + shuffle a youtubePlaylist into the sitePlaylist
+//
+
+async function loadAndShufflePlaylist(playlistId)
+{
+    const playlistTitle = await fetchPlaylistTitle(playlistId);
+
+    if (playlistTitle === null)
+    {
+        return;
+    }
+
+    const videos = await fetchPlaylistVideos(playlistId);
+
+    if (videos === null)
+    {
+        return;
+    }
+
+    if (videos.length === 0)
+    {
+        alert("That playlist has no videos, or the ID is wrong");
+        return;
+    }
+
+    playlistName = playlistTitle;
+    sitePlaylist = shuffleArray(videos);
+    currentIndex = 0;
+
+    localStorage.setItem("lastPlaylistId", playlistId);
+    localStorage.setItem("playlistName", playlistName);
+    localStorage.setItem("sitePlaylist", JSON.stringify(sitePlaylist));
+    localStorage.setItem("currentIndex", "0");
+
+    renderPlaylist();
+    updateDetails();
+    playVideo(0);
+}
+
+
+//
+// Fetch playlist title
+//
+
+async function fetchPlaylistTitle(playlistId)
+{
+    const url =
+        "https://www.googleapis.com/youtube/v3/playlists" +
+        "?part=snippet" +
+        "&id=" + playlistId +
+        "&key=" + YOUTUBE_API_KEY;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.error)
+    {
+        alert(data.error.message);
+        return null;
+    }
+
+    if (!data.items || data.items.length === 0)
+    {
+        alert("Playlist not found");
+        return null;
+    }
+
+    return data.items[0].snippet.title;
+}
+
+
+//
+// Fetch all playlist videos (handles pagination)
+//
+
+async function fetchPlaylistVideos(playlistId)
+{
+    const videos = [];
     let nextPageToken = "";
-
 
     do
     {
@@ -138,143 +246,140 @@ async function loadPlaylistVideos(playlistId)
             "&playlistId=" + playlistId +
             "&key=" + YOUTUBE_API_KEY;
 
-
         if (nextPageToken)
         {
             url += "&pageToken=" + nextPageToken;
         }
 
-
         const response = await fetch(url);
-
         const data = await response.json();
-
 
         if (data.error)
         {
             alert(data.error.message);
-            return;
+            return null;
         }
-
 
         for (const item of data.items)
         {
-            loadedVideos.push(
+            videos.push(
             {
                 id: item.snippet.resourceId.videoId,
-
                 title: item.snippet.title
             });
         }
 
-
-        nextPageToken =
-            data.nextPageToken || "";
-
-
-        videoCount.textContent =
-            loadedVideos.length;
-
+        nextPageToken = data.nextPageToken || "";
     }
     while (nextPageToken);
+
+    return videos;
 }
 
 
-
 //
-// Display playlist
+// Fisher-Yates shuffle
 //
 
-function displayVideos()
+function shuffleArray(array)
 {
-    videoList.innerHTML = "";
+    const result = array.slice();
 
+    for (let i = result.length - 1; i > 0; i--)
+    {
+        const j = Math.floor(Math.random() * (i + 1));
 
-    loadedVideos.forEach(
-        (video, index) =>
-        {
-            const listItem =
-                document.createElement("li");
+        const temp = result[i];
+        result[i] = result[j];
+        result[j] = temp;
+    }
 
-
-            listItem.textContent =
-                video.title;
-
-
-            listItem.addEventListener(
-                "click",
-                () =>
-                {
-                    playVideo(index);
-                }
-            );
-
-
-            videoList.appendChild(listItem);
-        }
-    );
+    return result;
 }
 
 
+//
+// Render the sitePlaylist as <li> elements
+//
+
+function renderPlaylist()
+{
+    listElement.innerHTML = "";
+
+    sitePlaylist.forEach((video, index) =>
+    {
+        const listItem = document.createElement("li");
+
+        listItem.className = (index === currentIndex) ? "active" : "";
+
+        const span = document.createElement("span");
+        span.textContent = video.title;
+
+        listItem.appendChild(span);
+
+        listItem.addEventListener("click", () =>
+        {
+            playVideo(index);
+        });
+
+        listElement.appendChild(listItem);
+    });
+
+    // re-apply any active search filter
+    searchInput.dispatchEvent(new Event("input"));
+}
+
 
 //
-// Play selected video
+// Update playlist name / counter display
+//
+
+function updateDetails()
+{
+    playlistNameText.textContent = playlistName;
+
+    videoCounterText.textContent =
+        (currentIndex + 1) + " / " + sitePlaylist.length;
+}
+
+
+//
+// Update the "active" class on the currently playing li
+//
+
+function updateActiveListItem()
+{
+    const items = listElement.querySelectorAll("li");
+
+    items.forEach((item, index) =>
+    {
+        item.className = (index === currentIndex) ? "active" : "";
+    });
+}
+
+
+//
+// Play a video from the sitePlaylist by index
 //
 
 function playVideo(index)
 {
-    if (!youtubePlayer)
+    if (index < 0 || index >= sitePlaylist.length)
     {
         return;
     }
 
+    currentIndex = index;
 
-    if (index < 0 ||
-        index >= loadedVideos.length)
+    localStorage.setItem("currentIndex", String(currentIndex));
+
+    updateDetails();
+    updateActiveListItem();
+
+    if (!playerReady)
     {
         return;
     }
 
-
-    currentVideoIndex = index;
-
-
-    youtubePlayer.loadVideoById(
-        loadedVideos[index].id
-    );
+    youtubePlayer.loadVideoById(sitePlaylist[index].id);
 }
-
-
-
-//
-// Next button
-//
-
-nextButton.addEventListener(
-    "click",
-    () =>
-    {
-        if (currentVideoIndex < loadedVideos.length - 1)
-        {
-            playVideo(currentVideoIndex + 1);
-        }
-    }
-);
-
-
-
-
-//
-// Previous button
-//
-
-previousButton.addEventListener(
-    "click",
-    () =>
-    {
-        if (currentVideoIndex > 0)
-        {
-            playVideo(currentVideoIndex - 1);
-        }
-    }
-);
