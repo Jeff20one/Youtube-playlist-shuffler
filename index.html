@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playlist Shuffler Prototype</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Playlist Loader</h1>
+
+    <input 
+        id="playlistIdInput"
+        type="text"
+        placeholder="Enter playlist ID"
+        size="50"
+    >
+
+    <button id="loadButton">
+        Load Playlist
+    </button>
+
+    <button id="resumeButton">
+        Resume Last Session
+    </button>
+
+
+    <h2>
+        Items loaded:
+        <span id="videoCount">0</span>
+    </h2>
+
+
+    <div id="player"></div>
+
+
+    <button id="previousButton">
+        Previous
+    </button>
+
+    <button id="nextButton">
+        Next
+    </button>
+
+
+    <ul id="videoList"></ul>
+
+
+    <script src="config.js"></script>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
