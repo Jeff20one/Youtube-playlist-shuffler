@@ -61,6 +61,11 @@ function onYouTubeIframeAPIReady()
                     {
                         playNextVideo();
                     }
+                },
+
+                onError: () =>
+                {
+                    playNextVideo();
                 }
             }
             
