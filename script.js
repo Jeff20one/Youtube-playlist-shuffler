@@ -442,7 +442,7 @@ function playNextVideo()
 
 function scrollActiveItemIntoView()
 {
-    const container = document.getElementById("Playlist");
+    const container = document.getElementById("List");
     const activeItem = listElement.querySelector("li.active");
 
     if (!activeItem)
