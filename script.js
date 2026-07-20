@@ -393,6 +393,8 @@ function updateActiveListItem()
     {
         item.className = (index === currentIndex) ? "active" : "";
     });
+    
+    scrollActiveItemIntoView();
 }
 
 
@@ -432,4 +434,57 @@ function playNextVideo()
     {
         playVideo(currentIndex + 1);
     }
+}
+
+//
+// Scroll the active list item to the center of the Playlist div
+//
+
+function scrollActiveItemIntoView()
+{
+    const container = document.getElementById("Playlist");
+    const activeItem = listElement.querySelector("li.active");
+
+    if (!activeItem)
+    {
+        return;
+    }
+
+    const containerHeight = container.clientHeight;
+    const itemTop = activeItem.offsetTop;
+    const itemHeight = activeItem.offsetHeight;
+
+    let targetScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+
+    const maxScrollTop = container.scrollHeight - containerHeight;
+    targetScrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
+
+    animateScrollTo(container, targetScrollTop, 200);
+}
+
+
+//
+// Animate a container's scrollTop over a fixed duration (ms)
+//
+
+function animateScrollTo(container, targetScrollTop, duration)
+{
+    const startScrollTop = container.scrollTop;
+    const distance = targetScrollTop - startScrollTop;
+    const startTime = performance.now();
+
+    function step(currentTime)
+    {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        container.scrollTop = startScrollTop + (distance * progress);
+
+        if (progress < 1)
+        {
+            requestAnimationFrame(step);
+        }
+    }
+
+    requestAnimationFrame(step);
 }
