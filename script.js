@@ -627,3 +627,16 @@ function animateScrollTo(container, targetScrollTop, duration)
 
     requestAnimationFrame(step);
 }
+
+//
+// Remove focus from any button after it's clicked
+// (stops outline persisting + spacebar re-triggering it)
+//
+
+document.addEventListener("click", (event) =>
+{
+    if (event.target.closest("button"))
+    {
+        event.target.closest("button").blur();
+    }
+});
