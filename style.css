@@ -127,22 +127,23 @@ input:focus { outline: none; }
 #Rating-container > #Whitelist-button {
     height: 30px;
     width: 80px;
-    background: #333;
 
     border-color: #222;
     border-width: 2px 0px 1px 2px;
     border-radius: 0 0 0 0;
-
-    span { color: #777; }
 }
 
 #Rating-container > #Blacklist-button {
     height: 30px;
     width: 80px;
-    background: #333;
+    
     border-color: #222;
     border-width: 1px 0px 2px 2px;
     border-radius: 0 0 0 0;
+}
+
+#Rating-container > Button:not(.active) {
+    background: #333;
 
     span { color: #777; }
 }
