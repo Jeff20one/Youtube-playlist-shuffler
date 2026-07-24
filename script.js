@@ -16,6 +16,9 @@ const listElement     = document.getElementById("List");
 const playlistNameText  = document.getElementById("Playlist-name-text");
 const videoCounterText  = document.getElementById("Video-counter-text");
 
+const whitelistButton = document.getElementById("Whitelist-button");
+const blacklistButton = document.getElementById("Blacklist-button");
+
 
 //
 // State
@@ -27,6 +30,37 @@ let playlistName   = "";
 
 let youtubePlayer;
 let playerReady = false;
+
+let whitelist = new Set();   // video ids, persistent across playlists
+let blacklist = new Set();   // video ids, persistent across playlists
+
+let blacklistCheckTimeout = null;
+
+
+//
+// Load persistent whitelist / blacklist on startup
+//
+
+loadRatingLists();
+
+function loadRatingLists()
+{
+    const savedWhitelist = localStorage.getItem("whitelist");
+    const savedBlacklist = localStorage.getItem("blacklist");
+
+    whitelist = new Set(savedWhitelist ? JSON.parse(savedWhitelist) : []);
+    blacklist = new Set(savedBlacklist ? JSON.parse(savedBlacklist) : []);
+}
+
+function saveWhitelist()
+{
+    localStorage.setItem("whitelist", JSON.stringify(Array.from(whitelist)));
+}
+
+function saveBlacklist()
+{
+    localStorage.setItem("blacklist", JSON.stringify(Array.from(blacklist)));
+}
 
 
 //
@@ -168,6 +202,74 @@ nextButton.addEventListener("click", () =>
 
 
 //
+// Whitelist / Blacklist buttons
+//
+
+whitelistButton.addEventListener("click", () =>
+{
+    const video = sitePlaylist[currentIndex];
+
+    if (!video)
+    {
+        return;
+    }
+
+    if (whitelist.has(video.id))
+    {
+        whitelist.delete(video.id);
+    }
+    else
+    {
+        whitelist.add(video.id);
+        blacklist.delete(video.id);
+    }
+
+    saveWhitelist();
+    saveBlacklist();
+    updateRatingButtons();
+});
+
+blacklistButton.addEventListener("click", () =>
+{
+    const video = sitePlaylist[currentIndex];
+
+    if (!video)
+    {
+        return;
+    }
+
+    if (blacklist.has(video.id))
+    {
+        blacklist.delete(video.id);
+    }
+    else
+    {
+        blacklist.add(video.id);
+        whitelist.delete(video.id);
+    }
+
+    saveWhitelist();
+    saveBlacklist();
+    updateRatingButtons();
+});
+
+
+//
+// Update whitelist / blacklist button highlighting for current video
+//
+
+function updateRatingButtons()
+{
+    const video = sitePlaylist[currentIndex];
+
+    const videoId = video ? video.id : null;
+
+    whitelistButton.classList.toggle("active", whitelist.has(videoId));
+    blacklistButton.classList.toggle("active", blacklist.has(videoId));
+}
+
+
+//
 // Search filter
 //
 
@@ -220,6 +322,7 @@ async function loadAndShufflePlaylist(playlistId)
 
     playlistName = playlistTitle;
     sitePlaylist = shuffleArray(videos);
+    sitePlaylist = sortWhitelistedFirst(sitePlaylist);
     currentIndex = 0;
 
     localStorage.setItem("lastPlaylistId", playlistId);
@@ -335,6 +438,26 @@ function shuffleArray(array)
 
 
 //
+// Move whitelisted videos to the front, preserving shuffle order within each group
+//
+
+function sortWhitelistedFirst(array)
+{
+    const result = array.slice();
+
+    result.sort((a, b) =>
+    {
+        const aRank = whitelist.has(a.id) ? 0 : 1;
+        const bRank = whitelist.has(b.id) ? 0 : 1;
+
+        return aRank - bRank;
+    });
+
+    return result;
+}
+
+
+//
 // Render the sitePlaylist as <li> elements
 //
 
@@ -415,13 +538,29 @@ function playVideo(index)
 
     updateDetails();
     updateActiveListItem();
+    updateRatingButtons();
+
+    if (blacklistCheckTimeout)
+    {
+        clearTimeout(blacklistCheckTimeout);
+    }
+
+    const video = sitePlaylist[index];
+
+    blacklistCheckTimeout = setTimeout(() =>
+    {
+        if (currentIndex === index && blacklist.has(video.id))
+        {
+            playNextVideo();
+        }
+    }, 5000);
 
     if (!playerReady)
     {
         return;
     }
 
-    youtubePlayer.loadVideoById(sitePlaylist[index].id);
+    youtubePlayer.loadVideoById(video.id);
 }
 
 //
