@@ -119,19 +119,37 @@ input:focus { outline: none; }
 /* Rating container */
 #Rating-container {
     position: absolute;
-    top: 8px;
-    left: -142px;
+    height: 40px;
+    top: 45px;
+    right: 500px;
 }
 
-#Rating-container > Button {
+#Rating-container > #Whitelist-button {
     height: 30px;
-    border-color: #444;
-    border-width: 2px;
-    border-radius: 10px;
+    width: 80px;
+    background: #333;
+
+    border-color: #222;
+    border-width: 2px 0px 1px 2px;
+    border-radius: 0 0 0 0;
+
+    span { color: #777; }
+}
+
+#Rating-container > #Blacklist-button {
+    height: 30px;
+    width: 80px;
+    background: #333;
+    border-color: #222;
+    border-width: 1px 0px 2px 2px;
+    border-radius: 0 0 0 0;
+
+    span { color: #777; }
 }
 
 #Whitelist-button.active,
-#Blacklist-button.active
-{
-    background: #f73;
+#Blacklist-button.active {
+    background: #777;
+
+    span { color: #fff; }
 }
