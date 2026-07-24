@@ -51,7 +51,6 @@ input:focus { outline: none; }
 
 #Resume-button {
     position: absolute;
- 
     right: 20px;
 }
 
@@ -66,6 +65,10 @@ input:focus { outline: none; }
 
 #Search-input {
     width: 100%
+}
+
+#Shuffle-button {
+    width: 66px;
 }
 
 /* Playlist */
