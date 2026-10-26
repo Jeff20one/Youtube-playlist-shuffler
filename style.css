@@ -38,6 +38,26 @@ span, input {
     padding-bottom: 0px;
 }
 
+#Controls-row
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#Controls-left,
+#Controls-right
+{
+    display: flex;
+    gap: 6px;
+}
+
+#Loop-button.active,
+#Auto-shuffle-button.active
+{
+    background: #f73;
+}
+
 button, input {
     background: #22222a;
         
@@ -67,8 +87,13 @@ input:focus { outline: none; }
     width: 100%
 }
 
-#Shuffle-button {
+#Shuffle-button
+{
     width: 66px;
+    max-width: 66px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 /* Playlist */
