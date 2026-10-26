@@ -55,7 +55,8 @@ span, input {
 #Loop-button.active,
 #Auto-shuffle-button.active
 {
-    background: #f73;
+    background: #555560;
+    border-color: #555560;
 }
 
 button, input {
@@ -68,11 +69,6 @@ button, input {
 }
 
 input:focus { outline: none; }
-
-#Resume-button {
-    position: absolute;
-    right: 20px;
-}
 
 #Playlist-input-UI {
    padding-top: 10px;
