@@ -2,69 +2,74 @@
 <html>
 <head>
     <title>Playlist Shuffler</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+	
+<div id="Video-container"></div>
 
-    <div id="Video-container"></div>
+<div id="Right-UI">
 
-    <div id="Right-UI">
-
-		<div id="Rating-container">
-
-	    	<button id="Whitelist-button">
-				<span> Whitelist </span>
-            </button>
-
-	    	<button id="Blacklist-button">
-				<span> Blacklist </span>
-            </button>
-
-		</div>
+	<div id="Rating-container">
+	    <button id="Whitelist-button">
+			<span> Whitelist </span>
+        </button>
+	    <button id="Blacklist-button">
+			<span> Blacklist </span>
+        </button>
+	</div>
 		
-        <div id="Above"> 
+    <div id="Above"> 
+		
+		<div id="Controls-row">
+    		<div id="Controls-left">
+        		<button id="Prev-button">
+					<span> Prev </span>
+				</button>
+        		<button id="Next-button">
+					<span> Next </span>
+				</button>
+    		</div>
+			
+    		<div id="Controls-right">
+        		<button id="Loop-button">
+					<span> Loop </span>
+				</button>
+        		<button id="Auto-shuffle-button">
+					<span> Auto Shuffle </span>
+				</button>
+        		<button id="Resume-button">
+					<span> Resume last session </span>
+				</button>
+    		</div>
+		</div>
 
-	    <button id="Prev-button">
-		<span> Prev </span>
-            </button>
-
-	    <button id="Next-button">
-		<span> Next </span>
-            </button>
-
-	    <button id="Resume-button">
-		<span> Resume last session </span>
-            </button>
-
-            <div id="Playlist-input-UI">
-                <span> Playlist ID </span>
-
+        <div id="Playlist-input-UI">
+        	<span> Playlist ID </span>
 	        <input id="Playlist-input" type="text" placeholder="Enter playlist ID"></input>
-
-		<button id="Shuffle-button">
-		    <span> Shuffle </span>
-            	</button>
-            </div>
+			<button id="Shuffle-button">
+		    	<span> Shuffle </span>
+            </button>
+        </div>
 	    
 	    <div id="Details">
 	        <span id="Playlist-name-text">  </span>
 	        <span id="Video-counter-text">  </span>
 	    </div>
-
-        </div>
-
-	<input id="Search-input" type="text" placeholder="Search video title"></input>
-        <div id="Playlist">
-            <ul id="List">
-            </ul>
-        </div>
-
+		
     </div>
 
-    <script src="config.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="script.js"></script>
+	<input id="Search-input" type="text" placeholder="Search video title"></input>
+    <div id="Playlist">
+        <ul id="List"></ul>
+    </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="script.js"></script>
+	
 </body
 </html>
