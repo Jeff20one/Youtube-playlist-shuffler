@@ -4,6 +4,9 @@
 
 const prevButton     = document.getElementById("Prev-button");
 const nextButton      = document.getElementById("Next-button");
+
+const loopButton        = document.getElementById("Loop-button");
+const autoShuffleButton = document.getElementById("Auto-shuffle-button");
 const resumeButton    = document.getElementById("Resume-button");
 
 const playlistInput   = document.getElementById("Playlist-input");
@@ -23,6 +26,9 @@ const blacklistButton = document.getElementById("Blacklist-button");
 //
 // State
 //
+
+let loopEnabled        = localStorage.getItem("loopEnabled") === "true";
+let autoShuffleEnabled = localStorage.getItem("autoShuffleEnabled") === "true";
 
 let sitePlaylist   = [];   // array of { id, title }
 let currentIndex   = 0;
@@ -177,6 +183,28 @@ resumeButton.addEventListener("click", () =>
     renderPlaylist();
     updateDetails();
     playVideo(currentIndex);
+});
+
+
+//
+// Loop / Auto Shuffle toggles
+//
+
+loopButton.classList.toggle("active", loopEnabled);
+autoShuffleButton.classList.toggle("active", autoShuffleEnabled);
+
+loopButton.addEventListener("click", () =>
+{
+    loopEnabled = !loopEnabled;
+    localStorage.setItem("loopEnabled", String(loopEnabled));
+    loopButton.classList.toggle("active", loopEnabled);
+});
+
+autoShuffleButton.addEventListener("click", () =>
+{
+    autoShuffleEnabled = !autoShuffleEnabled;
+    localStorage.setItem("autoShuffleEnabled", String(autoShuffleEnabled));
+    autoShuffleButton.classList.toggle("active", autoShuffleEnabled);
 });
 
 
@@ -572,7 +600,37 @@ function playNextVideo()
     if (currentIndex < sitePlaylist.length - 1)
     {
         playVideo(currentIndex + 1);
+        return;
     }
+
+    // end of the sitePlaylist
+    if (!loopEnabled || sitePlaylist.length === 0)
+    {
+        return;
+    }
+
+    if (autoShuffleEnabled)
+    {
+        reshuffleSitePlaylist();
+    }
+
+    playVideo(0);
+}
+
+//
+// Reshuffle the already-loaded sitePlaylist (no API call needed)
+//
+
+function reshuffleSitePlaylist()
+{
+    sitePlaylist = sortWhitelistedFirst(shuffleArray(sitePlaylist));
+    currentIndex = 0;
+
+    localStorage.setItem("sitePlaylist", JSON.stringify(sitePlaylist));
+    localStorage.setItem("currentIndex", "0");
+
+    renderPlaylist();
+    updateDetails();
 }
 
 //
