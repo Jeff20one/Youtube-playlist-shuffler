@@ -222,10 +222,7 @@ prevButton.addEventListener("click", () =>
 
 nextButton.addEventListener("click", () =>
 {
-    if (currentIndex < sitePlaylist.length - 1)
-    {
-        playVideo(currentIndex + 1);
-    }
+    playNextVideo();
 });
 
 
